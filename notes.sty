@@ -1,0 +1,101 @@
+\ProvidesPackage{notes}
+
+\usepackage{xcolor}
+\usepackage{amsthm}
+\usepackage{tcolorbox}
+\usepackage[a4page, total={6in,9in}]{geometry}
+\usepackage{titlesec}[nostruts]
+\usepackage{array}
+\usepackage{amsmath, tabu}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{scalerel}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\newcommand{\jwn}{j\omega_{0}} % j omega naught
+\newcommand{\jwnt}{j\omega_{0}t}
+\newcommand{\wn}{\omega_{0}}
+\newcommand{\wnt}{\omega_{0}t}
+\newcommand{\jw}{j\omega}
+\newcommand{\jwt}{j\omega t}
+\newcommand{\wt}{\omega t}
+\newcommand{\yn}{\mathrlap{y}_{\:\;\mathrlap{\scriptscriptstyle -}}\,\,(t)}
+\newcommand{\yp}{\mathrlap{y}_{\:\;\mathrlap{\scriptscriptstyle +}}\,\,(t)}
+\usepackage{mathrsfs}
+\usepackage{import}
+\usepackage{pgf}
+\usepackage{printlen}
+\usepackage{wrapfig}
+\usepackage[italicdiff]{physics}
+\usepackage{fancyhdr}
+    \fancyfoot{}
+    \lhead{Heaviside Operator Notes}
+    \rhead{}
+    \pagestyle{fancy}
+\usepackage{lastpage}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{xfrac}
+\usepackage{cancel}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+\usepackage[american, siunitx]{circuitikz}
+\usetikzlibrary{arrows.meta,decorations.markings,tikzmark,positioning}
+\usepackage{subcaption}
+
+\newcolumntype{L}{>{$}l<{$}} % math-mode version of "l" column type
+% e^{-at} \int_{-\infty}^{t}e^{a\tau}x(\tau)\dd{\tau}
+% \newcommand{\lowpass}[1]{ e^{-#1t} \int_{-\infty}^{t}e^{#1\tau}x(\tau)\dd{\tau} }
+\theoremstyle{definition}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{example}[thm]{Example}
+\cfoot{\thepage\ of \pageref{LastPage}}
+\usepackage{csquotes}
+\usepackage{subfig}
+\usepackage{pgfplots}
+% Scriptsize axis style.
+\pgfplotsset{
+    every axis/.append style={
+            tick label style={/pgf/number format/fixed}, 
+            every label/.append style={text=red, font=\scriptsize}, 
+            ylabel near ticks,
+            xlabel near ticks,grid=major},
+    dirac/.style={
+        mark=triangle*,
+        mark options={scale=2},
+        ycomb,
+        scatter,
+        visualization depends on={y/abs(y)-1 \as \sign},
+        scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
+    },
+    compat=1.16
+}
+
+\usepackage{tabularx}
+
+\usepackage{algpseudocode}
+\usepackage{float}
+\MakeRobust{\Call}
+
+\everymath{\displaystyle}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+\titleformat{\section}
+  {\Large\bfseries} % format
+  {}% label
+  {0pt} % sep
+  {\Large}  
+
+% snippets
+\newcommand{\bd}[1]{\textbf{#1}}
+\newcommand{\AIndent}[1][1]{\STATE\hspace{#1\algorithmicindent}}
+\usepackage{cleveref}
+\Crefname{thm}{Example}{Examples}

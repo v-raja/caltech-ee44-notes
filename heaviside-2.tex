@@ -1,0 +1,301 @@
+\documentclass{report}
+
+
+\usepackage{notes}
+
+\begin{document}
+
+\section{25. Heaviside Operator: Operator Catalog Review, Convolution Example} \\
+
+For any function, we use the notation:
+\begin{align*}
+    f(t) = F(p)\,\delta(t)
+\end{align*}
+where $f(t)$ is the function in the time-domain \\
+$F(p)$ is the operator \\
+$\delta(t)$ is the dirac delta function \\
+
+If $x(t)$ is the input signal and $y(t)$ is the output signal, then
+\begin{align*}
+    y(t) &= H(p)\,x(t)
+\intertext{where}
+    x(t) &= X(p)\,\delta(t) \\
+    y(t) &= Y(p)\,\delta(t)
+\end{align*}
+$H(p)$, $X(p)$, $Y(p)$ are known as the system, input and output operator respectively. Further, from the above set of equations we get,
+\begin{equation*}
+    Y(p) = H(p)\,X(p)
+\end{equation*}
+What does this relationship between the operators mean? How is it useful? Well, we previously computed $y(t)$ with a convolution,
+\begin{align*}
+    y(t) = h(t) * x(t)
+\end{align*}
+So,
+
+\begin{align*}
+y\tikzmark{y}(t) &= h\tikzmark{h}(t) * x\tikzmark{x}(t) \\[2em]
+Y(p) &= H(p) \, X(p) 
+\end{align*}
+
+\begin{tikzpicture}[overlay,remember picture, > = {Circle[open,blue]}]
+  \draw [<->] ([yshift=-.7ex]pic cs:x) -- ++(0,-2.2em);
+  \draw [<->] ([yshift=-.7ex]pic cs:h) -- ++(0,-2.2em);
+  \draw [<->] ([yshift=-.7ex]pic cs:y) -- ++(0,-2.2em);
+\end{tikzpicture}
+Thus, by converting the input signal to the operator domain using the catalog, and by converting the impulse response to the operator domain by using the $p$ operator for differentiation and $\tfrac{1}{p}$ operator for integration, we are able to compute the response of the system with just multiplication, as opposed to convolving which requires integration. Further, by simplifying the $Y(p)$ we get using partial fraction expansion, we're able to use our catalog to convert back to the time-domain by "pattern matching". 
+
+
+\section{26. Heaviside Operator: Initial Conditions} \\
+If our system has initial conditions, it means that it's response, $y(t)$, is two sided - a response to just the initial conditions before $t=0$ ($\yn$) and a response to the initial conditions and input signal after $t=0$ ($\yp$).  
+\begin{align*}
+    y(t) &= \yn + \yp \\
+    y(t) &= y(t)\,u(-t) + y(t)\,u(t)
+\end{align*}
+Now, we're interested in $\yp = y(t)\,u(t)$. For now, we'll differentiate this twice and the reason we do so will become obvious in the example below.
+
+\begin{align}
+    p\left[\yp\right] &= y'(t)u(t) + y(t) \delta(t) \nonumber \\
+    &= y'(t)u(t) + y(0)\delta(t) && \text{(as $\delta(t)$ is $0$ for all $t \neq 0$)}\nonumber \\
+    \therefore \; y'(t)u(t) &= p\left[\yp\right] - y(0)\delta(t) \label{eq1}
+\intertext{Similarly,}
+    p^2\left[\yp\right] &= y''(t)u(t) + y'(t) \delta(t) + y(0)\delta'(t) \nonumber \\
+    &= y''(t)u(t) + y'(0) \delta(t) + y(0)\delta'(t) && \text{(as $\delta(t)$ is $0$ for all $t \neq 0$)}\nonumber \\
+    \therefore \; y''(t)u(t) &= p^2\left[\yp\right] - y'(0)\delta(t) - y(0)\delta'(t) \label{eq2}
+\end{align}
+% [What is \delta'(t)? Pronounced ]
+
+\textbf{Solving differential equations with initial conditions} \\
+Suppose we want to solve the following differential equation, for $t > 0$
+\begin{align*}
+    y'' + 2y' + y &= 1 
+% \intertext{
+\end{align*}
+with initial conditions $y(0) = 2$ and $y'(0) = 1$. \smallskip \\% [Why two initial conditions? diff eq to power of two means order of the system is two so there are two degrees of freedom (i.e. two elements who can have their inital condidions set). Can we just specify one initial condition?]
+Since the system switches on after $t = 0$, we multiply both sides by $u(t)$ to get
+\begin{align*}
+    u(t) &= y''(t)u(t) + 2y'(t)u(t) + y(t)u(t) \\
+     &= p^2\left[\yp\right] - y'(0)\delta(t) - y(0)\delta'(t) && \text{(using \ref{eq1} and \ref{eq2})}\\
+     &\quad + 2p\left[\yp\right] - 2y(0)\delta(t) \\
+    &\qquad + \yp && \text{(as }\yp = y(t)\,u(t)\text{)}
+\end{align*}
+Rearranging,
+\begin{align*}
+\left[p^2 + 2p + 1\right]\yp &= u(t) + y'(0)\delta(t) +  y(0)\delta'(t) + 2y(0)\delta(t) \\
+\intertext{Substituting the initial values,}
+\left[p^2 + 2p + 1\right]\yp &= u(t) + \delta(t) +  2\delta'(t) + 4\delta(t)  \\
+&=  u(t) + 5\delta(t) +  2\delta'(t) \\ 
+&=  \frac{1}{p}\delta(t) + 5\delta(t) +  2p\delta(t) \\
+&=  \left[\frac{1}{p} + 5 +  2p\right]\delta(t) \label{eq3} \numberthis\\
+\therefore \; \yp &= \left[\frac{\frac{1}{p} + 5 +  2p}{p^2 + 2p + 1}\right] \\
+&= \left[\frac{2p^2 + 5p +  1}{p(p + 1)^2}\right]\delta(t) \\
+&= \left[\frac{1}{p} + \frac{2}{(p+1)^2} + \frac{1}{p+1}\right]\delta(t)
+\intertext{(the partial fraction expansion can be watched \href{https://youtu.be/aSgALon9MlA?t=1176}{here})\\
+Thus, using the catalog,}
+\yp &= u(t) + te^{-t}u(t) + e^{-t}u(t) \\
+    &= (1 + te^{-t} + e^{-t})u(t)
+\end{align*}
+The beauty of this is that, with the $p$ operator, initial conditions start to look like input signal into the system. Examining \ref{eq3}, we see that the initial conditions boil down to $5 + 2p$. This tell us that if we had a system with initial conditions set to $0$, and we superposition-ed our existing $u(t)$ input signal with another signal $5\delta(t) + 2\delta'(t)$, the system with the initial conditions and our new system with zero initial conditions and the superposition-ed input signal would behave in the same way! \\
+This illustrates the power of singularity functions - they have the ability to take a system from one state to another, instantly. Further, the lines between forced and natural responses of a system start to blur and the natural response can be looked at as the forced response to an impulse input.
+
+\section{27. System Function: Forced and Natural Response, Poles and Zeros, Time Domain View, Lapace Xform} \\
+\textbf{Assumptions:} LTI System \smallskip \\
+Till now, we've developed a powerful method to specify and analyze the time-domain response of a system to an input waveform $x(t)$. Now, we'll look at another way to specify, analyze and characterize a system: the frequency response. \smallskip \\
+Why is a system's frequency response important? Because it is a natural way to characterize certain types of systems. Examples of such systems include audio equipment (amplifiers, microphones, loudspeakers), wireless communication devices with transmitters and receivers, human-computer interaction equipment that measure bio-signals (EEG, EMG, ECG), etc. In general, frequency response is a natural way to characterize any system that measures or receives a signal and processes it.\smallskip \\
+Thus, we're changing our lens from time-related behavior to frequency-related behavior where the response of a system is presented as a function of input frequency. What do you think is a good approach to examining the frequency-related behavior of a system? \smallskip \\ 
+One thing we will have to do for sure is parameterise our input in terms of frequency (as opposed to time). But, even if we do so, will a system respond in some predictable manner to inputs of different frequencies? The answer, as we will see shortly, is yes; assuming a sinusoid of a fixed frequency (say $cos(\omega t)$), a LTI system responds by changing the sinusoid's phase and amplitude (i.e. $m \cdot cos(\omega t + \phi)$ where $m$ is some constant), but not its frequency. This is an amazing result that simplifies the frequency-domain analysis of a system to:
+\begin{itemize}
+    \item the magnitude of the output (compared to the input) for different frequencies (or, the gain as a function of frequency)
+    \item the phase shift of the output (compared to the input) for different frequencies (or, since $cos(\omega t + \phi)$ = $cos(\omega(t + \tfrac{\phi}{\omega}))$, the translation in time of the input signal as a function of frequency)
+\end{itemize}
+(this is as opposed to worrying about the system changing the frequency of our input signal, or worrying about the input being converted to some completely different class of functions) \\
+Now that we know what we're trying to achieve and why, let's figure out how we can get there from the foundations of the Heaviside operator that we have now. 
+\subsection*{Frequency Response of LTI Systems}
+\textbf{Figuring out an input with parametrised frequency} \\
+Let's first try to parameterise our input in terms of frequency. Frequency is the number of cycles per second, so what class of functions do we know of that has a notion of 'cycles'? Sinusoids such as $\cos(t)$. But $\cos(t)$ doesn't cut it because there's no parameter in the function that allows us to control its frequency. Hence, $\cos(\omega t)$ is the kind of input we're looking for because $\omega$ is the angular frequency which is proportional to the number of cycles per second, $f = \dfrac{\omega}{2\pi}$. \\
+\textbf{Assumptions:} LTI System, Input $x(t) = \cos(\omega t)u(t)$ \smallskip \\
+(It's important to note that there's no fundamental difference between using $\cos$ and $\sin$ as the input function, since $\cos$ is a phase-shifted $\sin$ wave and vice-versa, and so we could use $\sin$ instead. However, as we will see shortly, using $\cos$ as our input greatly simplifies calculations. This is a common theme in this topic; we will soon change $\cos$ to an exponential and again, it's important to remember there's no fundamental difference, but we have chosen to do so because it simplifies calculations and brings about further insight which is lost in a purely trigonometric representations of an input with a parameterised frequency). \smallskip \\
+Now, the next thing to think about is what kind of response do we want? and what response does our system operator give us? Our system operator gives us the total response of a system which consists of its natural response (response due to just the initial conditions) plus its forced response (response due to the input we give it). If we're solely interested in seeing how a system responds to our input based on the frequency of the input, we're not concerned about the natural response in the final response. How do we get only the forced response of a system using our operator method? Let's digress a bit to figure this out. \smallskip\\
+\textbf{Getting the forced response using the operator method} \\
+We know that
+\begin{equation*}
+    Y(p) &= H(p)X(p) = K\frac{(p-n_1)(p-n_2)...(p-n_l)}{(p-d_1)(p-d_2)...(p-d_m)}
+\end{equation*}
+where $n_i$ and $d_i$ are the roots of the numerator and denominator respectively, and $K$ is some rational number. Using partial fraction expansion, we can get
+\begin{align*} 
+    Y(p) &= H(p)X(p) \\ &= \frac{R_1}{p-d_1} + \frac{R_2}{p-d_2} + ... + \frac{R_m}{p-d_m} && \text{where } R_i = \eval{H(p)X(p)\frac{(p-d_i)}{K}}_{p=d_i}
+\end{align*}
+By superposition, we know that each $\frac{R_i}{p-d_i}\delta(t)$ (or $\left(\frac{R_i}{p-d_i} + \frac{R_i^*}{p+d_i}\right)\delta(t)$ in the case that $d_i$ is a complex root - if there is a complex root, we must have its complex conjugate as a root as the system operator for circuits with lumped elements is rational) is the response of the system due to some part of the system or to some part of the input. \smallskip \\ 
+Since we're trying to figure out how to obtain the forced response of the system which is due to the input, we can forget about the part of the response caused by the system. Looking at our catalog, figuring out which $\tfrac{R_i}{p-d_i}$s is due to our input is a very tedious task, unless our input is of the form $e^{st}u(t)$ in which case the $\tfrac{R_i}{p-d_i}$ with the denominator of $(p-s)$ corresponds to our input and hence is the forced response of the system. \smallskip \\
+Given its easier to figure out the forced response with input of the form $e^{st}u(t)$, we'll convert our input with parameterised frequency, $\cos(\omega t)u(t)$, to its exponential form $\tfrac{1}{2}\left(e^{s}+e^{-s}\right)$ where $s = j \omega$. \smallskip \\
+Lastly, before we move on from this, we've made an important assumption (whose consequences we'll later examine): if we have an input of $e^{st}u(t)$ and get the forced response using the above method, we assume that that there are no roots of $p = s$ in $H(p)$. If the numerator of $H(p)$ had a root of $p = s$, then $(p-s)$ in the numerator and denominator would cancel and so our forced response would be 'nulled' by the system and we wouldn't be able to get a forced response. Further, if the denominator of $H(p)$ had a root of $p = s$, then it would be difficult to discern the forced and natural response of the system due to the input. \\
+\textbf{Assumptions:} LTI System, Input $x(t) = \tfrac{1}{2}\left(e^{\jwt}+e^{-\jwt}\right)$, No root $p = s$ in $H(p)$ \smallskip\\
+\textbf{Putting it all together - calculating the frequency response} \\
+Our input is 
+\begin{align*}
+    x(t) &= \cos(\omega t)u(t) = \frac{1}{2}\left(e^{\jwt} + e^{-\jwt}\right) \\
+    \iff X(p) &= \frac{1}{2}\left(\frac{1}{p-j\omega} + \frac{1}{p + j\omega}\right) \\
+    \therefore Y(p) &= H(p)X(p) = \frac{1}{2}\left(\frac{H(p)}{p-j\omega} + \frac{H(p)}{p + j\omega}\right) \\
+    \intertext{But this is the total response of the system and we want only the forced response, so}
+    Y(p) &= \frac{1}{2}\left(\frac{H(j\omega)}{p-j\omega} + \frac{H(-j\omega)}{p + j\omega}\right) && \begin{tabular}[t]{@{}l@{}}
+                         as $H(j\omega) =$ \\
+                          $\eval{\left(H(p) + \frac{2H(p)(p - j\omega)}{p + j\omega}\right)}_{p = j\omega}$ 
+                         \end{tabular} \\\\ 
+            % && \text{as $H(\jwt) = \eval{\left(H(\jwt) + \frac{2H(-\jwt)(p - \jwt)}{p + \jwt}\right)}_{p = \jwt}$}\\
+    \therefore y(t) &= \frac{1}{2}\left(\frac{H(j\omega)}{p-j\omega} + \frac{H(-j\omega)}{p + j\omega}\right)\delta(t) \\
+    &= \frac{1}{2}\left(H(j\omega)e^{\jwt} + H(-j\omega)e^{-\jwt}\right)u(t) \\
+    \intertext{$H(j\omega)e^{\jwt}$ and $H(-j\omega)e^{-\jwt}$ are complex numbers and are conjugates of each others, so}
+    y(t) &= \Re{H(j\omega)e^{\jwt}}u(t) \\
+        &= \Re{\abs{H(j\omega)}e^{j \angle H(j\omega)}e^{\jwt}}u(t) && \text{converting $H(j\omega)$ to its exponential form}\\
+        &= \abs{H(j\omega)}\Re{e^{j \angle H(j\omega)}e^{\jwt}}u(t) \\
+        &= \abs{H(j\omega)}\Re{e^{j (\omega t + \angle H(j\omega))}}u(t) \\
+        &= \abs{H(j\omega)}\cos\left(\omega t + \angle H(j\omega)\right)u(t)
+\end{align*}
+Thus, the response of a LTI system to a sinusoid is a sinusoid with the same frequency and a possible change in amplitude and phase (translation in time). \smallskip \\
+What happened above? What role did the system operator play in the frequency response? What role did the input play in the frequency response? \smallskip \\
+Let's first look at the role of the system operator.\\
+When we obtained the forced response of the system, the system operators were evaluated at $p = j\omega$ and $p = -j\omega$ and we thus moved from the operator domain to the frequency domain. This shift meant that the system became a function of frequency (i.e. the system changes based on the frequency of the input). Thus, $H(p)$, the system operator in the operator domain, became $H(s)$ (where $s = \sigma + j\omega$), the \textbf{system function} in the frequency domain (here, $\sigma = 0$ as we're driving the system with an eternal sinusoid, but we'll soon introduce another input where $\sigma \neq 0$). The system function is also know as the the transfer function. \smallskip \\
+If you're wondering how $H(j\omega)$ is a frequency, it isn't by itself; however, because we have it's complex conjugate $H(-j\omega)$, adding the two gives us $2\Re{H(j\omega)}$ which is a sinusoid and thus a frequency. As stated previously, because the system operator is a rational function, if we have a complex root, we will also have its conjugate as a root, and so the system operator will always be evaluated at that complex root and its conjugate and will always add to give us a real sinusoid. \smallskip \\
+What role did the input play? \\
+$\cos(\omega t)u(t)$ did exactly what we wanted it to do - it was an input with a parameterised frequency that showed us how a system responded to different frequencies. Converting it to its exponential form made it a lot easier to obtain the forced response from the system, and the exponential form also made it a lot easier to add the phase shift at the end (as opposed to dealing with $\cos$ and getting the expanded from of $\cos(a + b)$ which includes a combination of sines and cosines). All this could have been done with $\sin(\omega t)$, and even with not changing $\cos$ to its exponential form, but the math would have been very messy. \smallskip \\
+\textbf{Simplifying the frequency response} \\
+Let's look back at our result and see if there's a simpler way to get arrive at it. Our input and response were 
+\begin{align*}
+    x(t) &= \cos(\omega t)u(t)  \\
+    y(t) &= \abs{H(j\omega)}\cos\left(\omega t + \angle H(j\omega)\right)u(t)
+\intertext{
+respectively.\\
+It can be seen that the system function $H(s)$ (where $s = \sigma + \jw$ and $\sigma = 0$)  contains all the information we need to understand the frequency response  of the system; hence, if we want to figure out the frequency response of the system, all we have to if get $H(s)$. Now, if we drive the system with $x(t) = e^{st}u(t)$,}
+    X(p) &= \frac{1}{p-s} \\
+    \therefore Y(p) &= H(p)X(p) = \frac{H(p)}{p-s} \\
+        &= \frac{H(s)}{p-s} && \text{(getting the forced response)} \\
+    \therefore y(t) &= \frac{H(s)}{p-s}\delta(t) \\
+    &= H(s)e^{st}u(t)
+\end{align*}
+We were able to obtain $H(s)$ with a lot fewer calculations. Thus, although it's meaningless physically to drive a system by $e^{st}$ as it's a complex number, mathematically, it gives us the information we want with much easier calculations. \smallskip \\
+Actually, there's an easier way to figure out the system function from our System Operator. All we have to do is replace $p$ in our system operator, $H(p)$, with $s$ to get the system function, $H(s)$. So why did we even bother to hit the system with $e^{st}$ in the first place? Because in the Laplace Transform, $e^{st}$ is used as the input function, so $x(t) = e^{st}$, and the reason it's used as the input function may not be obvious to someone looking at it for the first time, but now you know; $e^{st}$ is used because when it is applied to a LTI system, the response is $H(s)e^{st}$ which is useful because $H(s)$ contains all the information we need to understand the frequency response of a system.\\
+(For those interested in understanding from why this is so from a mathematical perspective, there is a lot of on Google, but in one line - all complex exponentials are eigenfunctions of LTI systems and the eigenvalue associated with $e^{st}$ is is $H(s)$). \smallskip \\
+\textbf{Laplace Transform} \\
+Forget that we know how to get the system function and suppose we didn't have the operator method, but suppose we did know that hitting our system with $e^{st}$ (yes, $u(t)$ was purposely not added) causes a response of the form $H(s)e^{st}$. How would we go about getting the system function? We have to use the basic method of convolving our input with the impulse response $h(t)$.
+\begin{align*}
+    x(t) &= e^{st} \\
+    y(t) &= (x*h)(t) \\
+    &= \int_{-\infty}^{\infty}h(\tau)x(t-\tau)\dd{\tau} = \int_{-\infty}^{\infty}h(\tau)e^{s(t-\tau)}\dd{\tau} \\
+    &= e^{st}\int_{-\infty}^{\infty}h(\tau)e^{-s\tau}\dd{\tau} 
+\intertext{The response of the system is our input $e^{st}$ transformed in magnitude and phase by $\int_{-\infty}^{\infty}h(\tau)e^{-s\tau}\dd{\tau}$. Let's change the notation of the integral to something a bit more friendly, so}
+    y(t) &= \scalebox{1.3}{$\mathscr{L}$}\{h(t)\}e^{st}
+\intertext{Further, whatever the number the integral returns will be a function of $s$, so}
+    y(t) &= H(s)e^{st} \\
+    \implies \scalebox{1.3}{$\mathscr{L}$}\{h(t)\} &= H(s)
+\end{align*}
+The operation that the integral performs on the impulse response is called the two-sided Laplace Transform. So essentially the two-sided Laplace transform is evaluating a system's response for an input that is $e^{st}$.  \smallskip \\ Hence, it is a special case of the Operator Method where our input is $e^{st}$. Further, the Laplace Transform looks at only the forced response of a system, not it's total response; to understand frequency response, this is perfectly fine, but this point illustrates that our Operator Method is more powerful in that it gives us more information (i.e. the natural response) about a system's response. Thus, the tools we've developed are more powerful mathematically (in the sense that it gives us a system's full response) and more general (in the sense that we can apply our method to any function). \smallskip \\ 
+Lastly, the Laplace transform has all these "issues" with the regions of convergence, but due to the way we've defined the operator method, we don't have to worry about regions of convergence. 
+
+% Clarification about one sided LT
+
+% Exploring the Laplace Transform
+
+
+
+% \textbf{Physical Intuition of Frequency Response} \\
+% \href{https://youtu.be/fKaZeD70p8I?t=707}{This video} illustrates frequency response in a physical system. 
+
+
+% Example from lec 27 here
+
+
+% Does that mean that there is no response? 
+
+
+% \textbf{Exploring the System Function} \\
+% We now understand the role the system function plays in the frequency response of a system. Let's now look at what we can exploit about its structure
+% Numerator roots, Denominator
+
+
+% \textbf{The s-plane} \\
+% We have 
+
+% SIGNALS & SYSTEMS 2E NAGRATH
+
+% STABILITY
+
+
+
+
+
+% Where is the laplace transform here?
+
+
+% Here's an idea: e^{st} is an eigenfunction of a LTI system - put it in and it comes out with some value and itself. Let's see this. But above, we came to the conclusion that \cos(\omega t) was a good parameterised input, and e^{st} is not really just \cos(\omega t). New idea: How about we have a fake input into our system of e^{st} (fake because it's not the input we want to put into the system, and we can't have a complex input in real life), exploit the fact that e^{st} is an eigenfunction of a LTI system, and once we get our answer, then deal with the fake imaginary part?
+
+% Unfortunately, our p operator is too powerful and gives us the complete response of a system which includes the system's natural (the response due to just the initial conditions) and forced/steady-state response (the response to the input if the system had zero initial conditions). 
+
+% We'll explain why e^{st} is used below, but for now we'll explain the use of e^{st} as an input that makes it easy to figure out a system's response to different frequencies.
+
+% Fake input that includes an imaginary component, and we do this to make it easier
+
+% \begin{align*}
+%     \text{Assume} s &= \pm \jw \\
+%     e^\sigma is just a constant and so just scales the system - we won't consider its effect for now and we'll introduce it again later
+%     e^{st} &= \cos(\omega t) + j \sin(\omega t)
+% \end{align*}
+
+
+% https://youtu.be/fKaZeD70p8I?t=707
+
+
+
+% (Note that we do
+% not use ωo in the input signal to avoid confusion with the ωo used to represent
+% the undamped natural frequency in a second order systems.)
+
+
+
+
+
+
+
+
+
+\textbf{System Functions} \\
+Suppose now we have a special input of $Ae^{st}u(t)$ where $s \in \mathbb{C}$ such that $s = \sigma + j\omega$ and $A$ is some constant.  \\
+\textbf{Assumptions:} LTI System, Input $x(t) = Ae^{st}u(t)$ where $s = \sigma + j\omega$ \smallskip \\
+It's important to keep in mind that $s$ is nothing but a complex number, and is no different than what we've already been dealing with. That said, why this input? what is so special about it? We already know the answer - it's a function that subsumes all the possible exponential, and sinusoidal waves (this statement is technically incorrect as sinusoids are a special case of exponentials as we will see). Let's digress a little bit to see this for ourselves by seeing what different of $s$ cause $Ae^{st}$ to become / relating looking at $Ae^{st}$ in terms of what we've already learned.\smallskip \\
+\textbf{Understanding what $Ae^{st}$ represents}
+\begin{align*}
+    Ae^{st} = Ae^{(\sigma + \jw)t} = Ae^{\sigma t}e^{\jwt} = Ae^{\sigma t}(\cos(\omega t) + j\sin(\omega t))
+\end{align*}
+\textit{Case 1: $s$ is real} \\
+Forgetting about $A$ for now, if $s$ is real, $\omega = 0$ and so $e^{st} = Ae^{\sigma t}$. Thus, if $\sigma > 0$, $e^{st}$ is a growing exponential, and if $\sigma < 0$, $e^{st}$ is a decaying exponential. $A$ dictates where the exponential will start from at time $t = 0$. Thus, this case subsumes all growing/decaying exponentials and constant inputs into our system. \medskip \\
+\textit{Case 2: $s$ has only a complex part} \\
+Forgetting about $A$ for now, if $s$ has only a complex part, $s = j\omega$, and $e^{st} = e^{j\omega t}$. So our input is $x(t) = e^{\jwt}u(t)$ and $X(p) = \frac{1}{p - j\omega}$. But looking at our catalog we have no entry for such an operator, and rightly so; it doesn't make sense to try and generate a complex input because it doesn't exist in our notion of things. It's like asking what $(1 + 2j)u(t)$ looks like. Hence, if we have a complex number, we must also have its complex conjugate to make it real and so 
+\begin{align*}
+    x(t) &= (e^{\jwt}+e^{-\jwt})u(t) \\
+    X(p) &= \frac{1}{p+\jw}+\frac{1}{p-\jw} && \text{(using the catalog)} \\
+    &= \frac{2p}{p^2 + \omega^2} \\
+  \therefore  x(t) &= 2\cos(\omega t)u(t) && \text{(using the catalog)}
+\intertext{By varying $\omega$ we can change the angular frequency of the $\cos$ wave, and by multiplying by some constant $c$, we can change the amplitude. But what about $\sin$, or any other phase shifted sinusoids? Isn't $Ae^{st}$ suppose to subsume that? This is where $A$ comes in.}
+    x(t) &= A(e^{\jwt}+e^{-\jwt})u(t) \\
+    X(p) &= \frac{1}{p+\jw}+\frac{1}{p-\jw} && \text{(using the catalog)} \\
+    &= \frac{2p}{p^2 + \omega^2} \\
+  \therefore  x(t) &= 2\cos(\omega t)u(t) && \text{(using the catalog)}
+\end{align*}
+
+Also, waves of many frequencies can be considered - square waves are sum of sinusoid of many different frequencies and since LTI system , we can get response. 
+
+
+
+% Assuming a sinusoid of a fixed frequency, a system responds by changing its phase and amplitude. 
+
+
+
+% e^{st}
+% Complex exponentials are eigenfunctions of LTI systems
+% https://youtu.be/fKaZeD70p8I?t=1735
+
+% https://youtu.be/fKaZeD70p8I?t=2360
+
+% input of e^{st}
+% imporant to keep in mind that s is nothing but a complex number
+% Why e^{st} - subsumes all possilbe inputs 
+                      
+\end{document}
